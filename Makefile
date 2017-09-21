@@ -1,2 +1,2 @@
 all:
-	gcc -Wall src/main.c -o invmat
+	gcc -Wall src/main.c src/util.c -o invmat
