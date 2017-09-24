@@ -1,50 +1,68 @@
 #include "util.h"
+#include "matrix.h"
 
-int main(int argc, char* argv[]){    
-    int i;
-    configuration config;    
-    int receivedIterationFlag = 0;
+int main(int argc, char* argv[]){        
+    configuration config;        
+    double* matrix;
+    double* identityColumn;
+    double* invMatrix;
+    double* Y;
+    int i, j;
+    srand(20172);
+    LU* lu;
+    
+    config = readConfiguration(argc, argv);    
 
-    for(i = 0; i < argc; i++){
-        if(strcmp(argv[i], "-e") == 0){            
-            if(++i == argc){
-                printErrorExit("Informe o nome do Arquivo de entrada\n-o <nomeArquivoEntrada>\n");
-            }            
-            config.inputFile = argv[i];
-        }
-        else if(strcmp(argv[i], "-o") == 0){            
-            if(++i == argc){
-                printErrorExit("Informe o nome do Arquivo de saída\n-o <nomeArquivoSaida>\n");
-            }            
-            config.outputFile = argv[i];
-        }        
-        else if(strcmp(argv[i], "-i") == 0){            
-            if(++i == argc){
-                printErrorExit("Informe o número de Iteracoes do refinamento\n-i <numIteracoes>\n");
-            }
-            receivedIterationFlag = 1;
-            config.iterationCount = atoi(argv[i]);
-        }
-        else if(strcmp(argv[i], "-r") == 0){
-            if(++i == argc){
-                printErrorExit("Informe o tamanho da matriz aleatoria\n-r <tamMatrizAleatoria>\n");
-            }            
-            config.randomMatrixSize = atoi(argv[i]);
-        }            
-    }
-
-    if(!receivedIterationFlag){
-        printErrorExit("Informe o número de Iteracoes do refinamento\n-i <numIteracoes>\n");
-    }
-
-    printf("Configurações recebidas:\n");
-    printf("Arquivo de Entrada: %s\n", config.inputFile);
-    printf("Arquivo de Saida: %s\n", config.outputFile);
+    printf("Configurações recebidas:\n");    
+    printf("Arquivo de Entrada: %s\n", config.inputFilePath);
+    printf("Arquivo de Saida: %s\n", config.outputFilePath);
     printf("Tam Matriz aleatoria: %d\n", config.randomMatrixSize);
     printf("Numero de Iteracoes Refinamento: %d\n", config.iterationCount);
+        
+    if(config.inputFile == NULL)
+        matrix = generateSquareRandomMatrix(config.randomMatrixSize);
+    else
+        matrix = readMatrixFromFile(config);
+    
+    //printMatrix(matrix, N);
 
-    srand(20172);
-    double** matrix = generateSquareRandomMatrix(10);
-    printMatrix(matrix, 10);    
+    lu = luDecomposition(matrix, N);
+    
+    Y = allocateMatrix(N);
+    invMatrix = allocateMatrix(N);
+
+    for(i = 0; i < N; i ++)
+        getVal(lu->L, i, i) = 1.0;
+
+    printf("-----L------\n");
+    printMatrix(lu->L, N);
+    printf("-----U------\n");
+    printMatrix(lu->U, N);    
+
+    for(i = 0; i < N; i ++){                
+        forwardSubstitution(lu->L, Y, i, N);
+        //for(j = 0; j < N; j++)
+            //printf("%f ", identityColumn[j]);
+    }
+    printf("-----Y------\n");    
+    printMatrix(Y, N);
+    for(i = 0; i < N; i ++){                
+        backwardSubstitution(lu->U, invMatrix, Y, i, N);        
+        //for(j = 0; j < N; j++)
+            //printf("%f ", identityColumn[j]);
+    }      
+
+    // printf("--L--\n");
+    // printMatrix(lu->L, N);
+    // printf("--L--\n");    
+    printf("---A-1----\n");
+    printMatrix(invMatrix, N);
+    // printf("--A--\n");    
+    // printMatrix(matrix, N);
+    // printf("--L--\n");
+    // printMatrix(lu->L, N);
+    // printf("--U--\n");
+    // printMatrix(lu->U, N);
+
     return 0;
 }
