@@ -4,7 +4,7 @@
 #include <string.h>
 
 int N;
-#define getVal(m, i, j) (m[j + i * N])
+#define getVal(m, i, j) (m[(j) + (i) * (N)])
 
 typedef struct configuration{
     char* inputFilePath;

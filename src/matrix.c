@@ -63,8 +63,9 @@ void forwardSubstitution(double* L, double* Y, int colIndex, unsigned n){
 
     for(i = 1; i < n; i++){
         sum = 0;
-        for(k = 0; k < (i-1); k++)
-            sum += sum + getVal(L, i, k) * getVal(Y, k, colIndex);
+        for(k = 0; k < i; k++){            
+            sum += getVal(L, i, k) * getVal(Y, k, colIndex);
+        }
         
         getVal(Y, i, colIndex) = (B[i] - sum) / getVal(L, i, i);
     }    
@@ -73,25 +74,16 @@ void forwardSubstitution(double* L, double* Y, int colIndex, unsigned n){
 void backwardSubstitution(double* U, double* X, double* Y, int colIndex, unsigned n){
     int i, k;
     double sum;    
-    
-    getVal(X, n-1, colIndex) = getVal(Y, n-1, colIndex)/ getVal(U, n-1, n-1);
-    //getVal(Y, n-1, colIndex) = B[0]/getVal(L, 0, 0);      
+        
+    getVal(X, n-1, colIndex) = getVal(Y, n-1, colIndex) / getVal(U, n-1, n-1);    
 
     for(i = n-2; i >= 0; i--){
         sum = 0;
         for(k = i + 1; k < n; k++)
-            sum += sum + getVal(U, i, k) * getVal(X, k, colIndex);
+            sum += getVal(U, i, k) * getVal(X, k, colIndex);
         
         getVal(X, i, colIndex) = (getVal(Y, i, colIndex) - sum) / getVal(U, i, i);
-    }
-    // xn,j = yn,j / un,n;
-    // for i := n-1 downto 1 do /* process elements of that column */
-    
-    //     begin
-    //         sum := 0; /* solving for xi on the current column */
-    //         for k := i+1 to n do
-    //             sum := sum + ui,k× xk,j;
-    //         xi,j = (yi,j - sum)/ui,i; end 
+    }   
 }
 
 

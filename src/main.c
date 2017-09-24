@@ -3,11 +3,10 @@
 
 int main(int argc, char* argv[]){        
     configuration config;        
-    double* matrix;
-    double* identityColumn;
+    double* matrix;    
     double* invMatrix;
     double* Y;
-    int i, j;
+    int i;
     srand(20172);
     LU* lu;
     
@@ -34,6 +33,8 @@ int main(int argc, char* argv[]){
     for(i = 0; i < N; i ++)
         getVal(lu->L, i, i) = 1.0;
 
+    printf("-----A------\n");
+    printMatrix(matrix, N);    
     printf("-----L------\n");
     printMatrix(lu->L, N);
     printf("-----U------\n");
