@@ -7,7 +7,6 @@ void pivotMatrix(double* m, pivotsRecord* pRecord){
 
     for(i = 0; i < pRecord->count; i++){
         swapRows(m, pRecord->pivots[i]->fromIndex, pRecord->pivots[i]->toIndex, 0, N);
-        printf("Swapping %d with %d\n", pRecord->pivots[i]->fromIndex, pRecord->pivots[i]->toIndex);
     }
         
 }
@@ -152,5 +151,32 @@ double* multiplyMatrix(double* A, double* B, unsigned int n){
         }
     }
         
+    return R;
+}
+
+void AddMatrix(double *A, double *B, unsigned int n){
+    int i, j;        
+
+    for(i = 0; i < n; i ++){
+        for(j = 0; j < n; j++){
+            getVal(A, i, j) += getVal(B, i, j);
+        }
+    }        
+}
+
+double* getResidue(double *Xcandidate, double *X, double* residue, unsigned int n){
+    int i,j;    
+    double* R;
+    *residue = 0;
+    R = allocateMatrix(n);    
+    
+    for(i = 0; i < n; i++){
+        for(j = 0; j < n; j++){
+            getVal(R, i , j) = getVal(X, i, j) - getVal(Xcandidate, i, j);            
+            *residue += pow(getVal(R, i, j), 2);
+        }
+    }          
+    *residue = sqrt(*residue);
+
     return R;
 }

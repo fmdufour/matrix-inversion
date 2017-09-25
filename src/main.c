@@ -1,13 +1,19 @@
 #include "util.h"
 #include "matrix.h"
 
+
 int main(int argc, char* argv[]){        
-    configuration config;        
+    configuration config;  
+    int i = 0;      
     double* matrix;
     double* invMatrix;
     double* Y;
-    double *B;
+    double* B;
+    double* R;
+    double* Delta;
+    double* idMatrixPivoted;    
     double* idMatrix;    
+    double residue;
     pivotsRecord* pRecord;    
     srand(20172);
     LU* lu;    
@@ -25,27 +31,40 @@ int main(int argc, char* argv[]){
 
     lu = luDecomposition(matrix, pRecord, N);
                 
-    idMatrix = getIdentityMatrix(N);    
-    pivotMatrix(idMatrix, pRecord);
+    idMatrixPivoted = getIdentityMatrix(N);
+    pivotMatrix(idMatrixPivoted, pRecord);
 
-    Y = forwardSubstitution(lu->L, idMatrix, N, N);        
+    Y = forwardSubstitution(lu->L, idMatrixPivoted, N, N);        
     
     invMatrix = backwardSubstitution(lu->U, Y, N, N);       
 
     B = multiplyMatrix(matrix, invMatrix, N);
+    idMatrix = getIdentityMatrix(N);        
     
-    printf("-----A------\n");
-    printMatrix(matrix, N);    
-    printf("-----L------\n");
-    printMatrix(lu->L, N);
-    printf("-----U------\n");
-    printMatrix(lu->U, N);    
-    printf("-----Y------\n");    
-    printMatrix(Y, N);
-    printf("---A-1----\n");
-    printMatrix(invMatrix, N);
-    printf("-----AxA-1------\n");    
-    printMatrix(B, N);    
+    printf("#\n");
+
+    for(i = 0; i < config.iterationCount; i++){
+
+        R = getResidue(B, idMatrix, &residue, N);                        
+
+        pivotMatrix(R, pRecord);
+        
+        Y = forwardSubstitution(lu->L, R, N, N);
+
+        Delta = backwardSubstitution(lu->U, Y, N, N);
+
+        AddMatrix(invMatrix, Delta, N);
+
+        free(B);
+        
+        B = multiplyMatrix(matrix, invMatrix, N);
+        
+        printf("# iter %d: %.17f\n", (i+1), residue);
+
+    }    
+        
+    printf("%d\n", N);    
+    printMatrix(invMatrix, N);    
 
     free(Y);
     free(idMatrix);
