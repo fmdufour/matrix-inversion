@@ -1,14 +1,17 @@
 #include "util.h"
 
-double* getIdentityColumn(unsigned int iCol, unsigned int n){
-    double* col = malloc(sizeof(double) * n);
-    int i;
+double* getIdentityMatrix(unsigned int n){
+    int i,j;
+    
+    double* identity = allocateMatrix(n);    
 
     for(i = 0; i < n; i++){
-        col[i] = iCol == i ? 1.0 : 0.0;        
+        for(j = 0; j < n; j++){
+            getVal(identity, i, j) = (i == j ? 1.0 : 0.0);                        
+        }        
     }
         
-    return col;
+    return identity;
 }
 
 double* allocateMatrix(unsigned int n){
@@ -73,7 +76,7 @@ void printMatrix(double *matrix, unsigned int n)
 
 void printErrorExit(char *msg)
 {
-    fprintf(stderr, msg);
+    fprintf(stderr, "%s", msg);
     exit(1);
 }
 

@@ -3,67 +3,56 @@
 
 int main(int argc, char* argv[]){        
     configuration config;        
-    double* matrix;    
+    double* matrix;
     double* invMatrix;
     double* Y;
-    int i;
+    double *B;
+    double* idMatrix;    
+    pivotsRecord* pRecord;    
     srand(20172);
-    LU* lu;
+    LU* lu;    
     
     config = readConfiguration(argc, argv);    
-
-    printf("Configurações recebidas:\n");    
-    printf("Arquivo de Entrada: %s\n", config.inputFilePath);
-    printf("Arquivo de Saida: %s\n", config.outputFilePath);
-    printf("Tam Matriz aleatoria: %d\n", config.randomMatrixSize);
-    printf("Numero de Iteracoes Refinamento: %d\n", config.iterationCount);
         
     if(config.inputFile == NULL)
         matrix = generateSquareRandomMatrix(config.randomMatrixSize);
     else
         matrix = readMatrixFromFile(config);
+
+    pRecord = malloc(sizeof(pivotsRecord));
+    pRecord->pivots = malloc(sizeof(pivot)* N); 
+    pRecord->count = 0;
+
+    lu = luDecomposition(matrix, pRecord, N);
+                
+    idMatrix = getIdentityMatrix(N);    
+    pivotMatrix(idMatrix, pRecord);
+
+    Y = forwardSubstitution(lu->L, idMatrix, N, N);        
     
-    //printMatrix(matrix, N);
+    invMatrix = backwardSubstitution(lu->U, Y, N, N);       
 
-    lu = luDecomposition(matrix, N);
+    B = multiplyMatrix(matrix, invMatrix, N);
     
-    Y = allocateMatrix(N);
-    invMatrix = allocateMatrix(N);
-
-    for(i = 0; i < N; i ++)
-        getVal(lu->L, i, i) = 1.0;
-
     printf("-----A------\n");
     printMatrix(matrix, N);    
     printf("-----L------\n");
     printMatrix(lu->L, N);
     printf("-----U------\n");
     printMatrix(lu->U, N);    
-
-    for(i = 0; i < N; i ++){                
-        forwardSubstitution(lu->L, Y, i, N);
-        //for(j = 0; j < N; j++)
-            //printf("%f ", identityColumn[j]);
-    }
     printf("-----Y------\n");    
     printMatrix(Y, N);
-    for(i = 0; i < N; i ++){                
-        backwardSubstitution(lu->U, invMatrix, Y, i, N);        
-        //for(j = 0; j < N; j++)
-            //printf("%f ", identityColumn[j]);
-    }      
-
-    // printf("--L--\n");
-    // printMatrix(lu->L, N);
-    // printf("--L--\n");    
     printf("---A-1----\n");
     printMatrix(invMatrix, N);
-    // printf("--A--\n");    
-    // printMatrix(matrix, N);
-    // printf("--L--\n");
-    // printMatrix(lu->L, N);
-    // printf("--U--\n");
-    // printMatrix(lu->U, N);
+    printf("-----AxA-1------\n");    
+    printMatrix(B, N);    
+
+    free(Y);
+    free(idMatrix);
+    free(matrix);
+    free(lu->L);
+    free(lu->U);
+    free(lu);
 
     return 0;
 }

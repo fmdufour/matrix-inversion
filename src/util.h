@@ -15,7 +15,10 @@ typedef struct configuration{
     int iterationCount;
 } configuration;
 
-double* getIdentityColumn(unsigned int iCol, unsigned int n);
+
+double* getIdentityMatrix(unsigned int n);
+double* forwardSubstitution(double *L, double *B, unsigned int yOrder, unsigned int n);
+double* backwardSubstitution(double *U, double *Y,  unsigned int xOrder, unsigned int n);
 double* allocateMatrix(unsigned int n);
 double *generateSquareRandomMatrix(unsigned int n);
 double *readMatrixFromFile(configuration config);
