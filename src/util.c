@@ -41,6 +41,20 @@ double* generateSquareRandomMatrix(unsigned int n)
     return mat;
 }
 
+double* readMatrixFromStdIn(){
+    double *mat = NULL;
+    int i;
+
+    scanf("%d", &N);    
+
+    mat = allocateMatrix(N);    
+    
+    for(i = 0; i < N*N; i++)
+        scanf("%lf", &mat[i]);
+
+    return mat;
+}
+
 double* readMatrixFromFile(configuration config){
     double *mat = NULL;
     int i;

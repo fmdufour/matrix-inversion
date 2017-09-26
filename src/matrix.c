@@ -15,7 +15,7 @@ void swapRows(double* A, int fromI, int toI, int startColumn, int n){
     int i;
     double temp;
     for (i = startColumn; i < n; i++)
-    {
+    {        
         temp = getVal(A, fromI, i);
         getVal(A, fromI, i) = getVal(A, toI, i);
         getVal(A, toI, i) = temp;
@@ -25,15 +25,15 @@ void swapRows(double* A, int fromI, int toI, int startColumn, int n){
 void pivotRows(double *matrix, int j, unsigned int n, pivotsRecord* pRecord)
 {
     int i = j;
-    double max = abs(getVal(matrix, i, j));
+    double max = fabs(getVal(matrix, i, j));
     int maxIndex = i;
     pivot* p;    
 
     for (i++; i < n; i++)
     {
-        if (abs(getVal(matrix, i, j)) > max)
+        if (fabs(getVal(matrix, i, j)) > max)
         {
-            max = abs(getVal(matrix, i, j));
+            max = fabs(getVal(matrix, i, j));
             maxIndex = i;
         }
     }
@@ -73,7 +73,7 @@ LU *luDecomposition(double *A, pivotsRecord* pRecord, unsigned int n)
 
     for (j = 0; j < N; j++)
     {
-        pivotRows(lu->U, j, N, pRecord);
+        pivotRows(lu->U, j, N, pRecord);  
         for (i = j + 1; i < N; i++)
         {
             getVal(lu->L, i, j) = getVal(lu->U, i, j) / getVal(lu->U, j, j);
@@ -100,13 +100,13 @@ double* forwardSubstitution(double *L, double *B, unsigned int yOrder, unsigned 
 
         for (i = 1; i < n; i++)
         {
-            sum = 0;
+            sum = getVal(B, i, colIndex);
             for (k = 0; k < i; k++)
             {
-                sum += getVal(L, i, k) * getVal(Y, k, colIndex);
+                sum -= getVal(L, i, k) * getVal(Y, k, colIndex);
             }
 
-            getVal(Y, i, colIndex) = (getVal(B, i, colIndex) - sum) / getVal(L, i, i);
+            getVal(Y, i, colIndex) = (sum);
         }        
     }
     
@@ -125,11 +125,11 @@ double* backwardSubstitution(double *U, double *Y, unsigned int xOrder, unsigned
     
         for (i = n - 2; i >= 0; i--)
         {
-            sum = 0;
+            sum = getVal(Y, i, colIndex);
             for (k = i + 1; k < n; k++)
-                sum += getVal(U, i, k) * getVal(X, k, colIndex);
+                sum -= getVal(U, i, k) * getVal(X, k, colIndex);
     
-            getVal(X, i, colIndex) = (getVal(Y, i, colIndex) - sum) / getVal(U, i, i);
+            getVal(X, i, colIndex) = (sum) / getVal(U, i, i);
         }
     }
 
@@ -168,11 +168,11 @@ double* getResidue(double *Xcandidate, double *X, double* residue, unsigned int 
     int i,j;    
     double* R;
     *residue = 0;
-    R = allocateMatrix(n);    
+    R = allocateMatrix(n);
     
     for(i = 0; i < n; i++){
         for(j = 0; j < n; j++){
-            getVal(R, i , j) = getVal(X, i, j) - getVal(Xcandidate, i, j);            
+            getVal(R, i , j) = getVal(X, i, j) - getVal(Xcandidate, i, j);
             *residue += pow(getVal(R, i, j), 2);
         }
     }          
