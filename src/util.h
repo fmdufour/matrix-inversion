@@ -15,8 +15,6 @@ typedef struct configuration{
     int iterationCount;
 } configuration;
 
-
-
 double* readMatrixFromStdIn();
 double* getIdentityMatrix(unsigned int n);
 double* forwardSubstitution(double *L, double *B, unsigned int yOrder, unsigned int n);

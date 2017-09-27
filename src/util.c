@@ -226,9 +226,6 @@ configuration readConfiguration(int argc, char *argv[])
         printErrorExit("Informe o número de Iteracoes do refinamento\n-i <numIteracoes>\n");
     }
 
-    if(config.inputFile == NULL && config.randomMatrixSize == 0){
-        printErrorExit("Informe o tamanho da matriz aleatoria\n-r <tamMatrizAleatoria>\n");
-    }
 
     return config;
 }

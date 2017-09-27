@@ -99,6 +99,8 @@ void copyMatrix(double *A, double *B, unsigned int n)
 LU *luDecomposition(double *A, pivotsRecord* pRecord, unsigned int n)
 {
     int i, j, colIndex;
+    
+
     LU *lu = malloc(sizeof(LU));
 
     lu->L = allocateMatrix(n);
@@ -114,6 +116,8 @@ LU *luDecomposition(double *A, pivotsRecord* pRecord, unsigned int n)
         pivotRows(lu->U, j, N, pRecord);  
         for (i = j + 1; i < N; i++)
         {
+            if(getVal(lu->U, j, j) == 0)
+                printErrorExit("Não é possível inverter essa matriz\n");
             getVal(lu->L, i, j) = getVal(lu->U, i, j) / getVal(lu->U, j, j);
 
             for (colIndex = j; colIndex < n; colIndex++)
@@ -122,6 +126,10 @@ LU *luDecomposition(double *A, pivotsRecord* pRecord, unsigned int n)
             }
         }
     }
+
+    if(getDeterminant(lu->U, n) == 0)
+        printErrorExit("Não é possível inverter essa matriz\n");
+
 
     return lu;
 }
@@ -143,7 +151,7 @@ double* forwardSubstitution(double *L, double *B, unsigned int yOrder, unsigned 
 
     for (colIndex = 0; colIndex < yOrder; colIndex++)
     {        
-        getVal(Y, 0, colIndex) = getVal(B, 0, colIndex) / getVal(L, 0, 0);
+        getVal(Y, 0, colIndex) = getVal(B, 0, colIndex) * 1.0;
 
         for (i = 1; i < n; i++)
         {
@@ -181,8 +189,8 @@ double* backwardSubstitution(double *U, double *Y, unsigned int xOrder, unsigned
         for (i = n - 2; i >= 0; i--)
         {
             sum = getVal(Y, i, colIndex);
-            for (k = i + 1; k < n; k++)
-                sum -= getVal(U, i, k) * getVal(X, k, colIndex);
+            for (k = n-1 ; k > i; k--)
+                sum -= (getVal(U, i, k) * 1.0) * getVal(X, k, colIndex);
     
             getVal(X, i, colIndex) = (sum) / getVal(U, i, i);
         }
@@ -231,6 +239,22 @@ void AddMatrix(double *A, double *B, unsigned int n){
             getVal(A, i, j) += getVal(B, i, j);
         }
     }        
+}
+
+/**
+ * Função getDeterminant:
+ *  Objetivo: Calcular o determinante de uma matriz
+ *  Entrada: - m -> matriz a calcular o det
+ *           - n -> ordem da matriz
+ */
+double getDeterminant(double * m, unsigned int n)
+{    
+    double det = 1.0;
+    int i;
+    for(i = 0; i < n; i ++)
+        det *= getVal(m, i , i);
+
+    return det;
 }
 
 /**

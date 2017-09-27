@@ -8,8 +8,6 @@
  *   
  * @autor Carolina Aparecida de Lara Moraes GRR20111353           
  */
-
-
 int main(int argc, char* argv[]){        
     configuration config;  
     int i = 0;      
@@ -30,8 +28,10 @@ int main(int argc, char* argv[]){
     srand(20172);
     LU* lu;    
     
+    //Le do stdin as configuracoes e preenche a estrutura de dados
     config = readConfiguration(argc, argv);    
-        
+    
+    //recupera a matriz em forma de vetor conforme a entrada por linha de comando
     if(config.randomMatrixSize > 0 && config.inputFile == NULL)
         matrix = generateSquareRandomMatrix(config.randomMatrixSize);
     else if(config.inputFile != NULL)
@@ -39,24 +39,28 @@ int main(int argc, char* argv[]){
     else
         matrix = readMatrixFromStdIn();
 
+    //aloca a estrutura de dados a qual guarda o historico de pivots
     pRecord = malloc(sizeof(pivotsRecord));
     pRecord->pivots = malloc(sizeof(pivot)* N); 
     pRecord->count = 0;
 
     startTime = timestamp();
 
+    //fatora a matriz em L e U
     lu = luDecomposition(matrix, pRecord, N);
 
     luDecompTime = diffInSeconds(startTime);
 
+    //pivotei a matriz original para que a multiplicacao pela inversa gere a identidade corretamente
     pivotMatrix(matrix, pRecord);
                 
     idMatrixPivoted = getIdentityMatrix(N);
 
+    //soluciona a equacao da forma Ly=B
     Y = forwardSubstitution(lu->L, idMatrixPivoted, N, N);        
-    
+    //soluciona a equacao da forma Ux=Y
     invMatrix = backwardSubstitution(lu->U, Y, N, N);       
-    
+    //gera uma matriz identidade
     idMatrix = getIdentityMatrix(N);            
 
     if(config.outputFile == NULL)
@@ -66,19 +70,19 @@ int main(int argc, char* argv[]){
 
     for(i = 0; i < config.iterationCount; i++){           
         startTime = timestamp();
-
+        //realiza a multiplicacao da matriz por sua inversa
         B = multiplyMatrix(matrix, invMatrix, N);
 
         startTime2 = timestamp();
-
+        // gera a matriz com os erros para cada x e tambem calcula residuo
         R = getResidue(B, idMatrix, &residue, N);                        
 
         totalResidueTime += diffInSeconds(startTime2);
-        
+        //resolve o sistema para o residuo
         Y = forwardSubstitution(lu->L, R, N, N);
-
+        //resolve o sistema para gera o delta
         Delta = backwardSubstitution(lu->U, Y, N, N);
-
+        // adiciona o delta na matriz inversa
         AddMatrix(invMatrix, Delta, N);
 
         totalLsSolveTime += diffInSeconds(startTime);
@@ -89,7 +93,7 @@ int main(int argc, char* argv[]){
             fprintf(config.outputFile, "# iter %d: %.17f\n", (i+1), residue);
 
     }        
-        
+    //pivoteia a matriz inversa para sair corretamente
     pivotMatrix(invMatrix, pRecord);    
 
     if(config.outputFile == NULL){
