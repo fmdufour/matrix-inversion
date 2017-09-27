@@ -1,5 +1,12 @@
 #include "util.h"
 
+
+/**
+ * Função getIdentityMatrix:
+ *  Objetivo: Retornar uma matriz identidade de ordem n
+ *  Entrada: - n -> A ordem da matriz a ser gerada
+ *  Saida: A matriz identidade 
+ */
 double* getIdentityMatrix(unsigned int n){
     int i,j;
     
@@ -14,6 +21,12 @@ double* getIdentityMatrix(unsigned int n){
     return identity;
 }
 
+/**
+ * Função allocateMatrix:
+ *  Objetivo: Alocar um vetor para representar uma matriz de ordem n
+ *  Entrada: - n -> ordem da matriz a ser alocada
+ *  Saida: O vetor alocado para a matriz
+ */
 double* allocateMatrix(unsigned int n){
     double *mat = NULL;
     /* return NULL if memory allocation fails */
@@ -23,6 +36,12 @@ double* allocateMatrix(unsigned int n){
     return mat;
 }
 
+/**
+ * Função generateSquareRandomMatrix:
+ *  Objetivo: Gerar um vetor para representar uma matriz de ordem n com valores aleatorios
+ *  Entrada: - n -> ordem da matriz a ser alocada
+ *  Saida: O vetor alocado para a matriz com os valores aleatorios
+ */
 double* generateSquareRandomMatrix(unsigned int n)
 {
     double *mat = NULL;
@@ -41,6 +60,11 @@ double* generateSquareRandomMatrix(unsigned int n)
     return mat;
 }
 
+/**
+ * Função readMatrixFromStdIn:
+ *  Objetivo: retornar um vetor para representar uma matriz lida do stdin 
+ *  Saida: O vetor alocado para a matriz
+ */
 double* readMatrixFromStdIn(){
     double *mat = NULL;
     int i;
@@ -55,6 +79,12 @@ double* readMatrixFromStdIn(){
     return mat;
 }
 
+/**
+ * Função readMatrixFromFile:
+ *  Objetivo: retornar um vetor para representar uma matriz lida de um arquivo
+ *  Entrada: Estrutura de dados de configuracao a qual contem o FILE*
+ *  Saida: O vetor alocado para a matriz 
+ */
 double* readMatrixFromFile(configuration config){
     double *mat = NULL;
     int i;
@@ -69,6 +99,11 @@ double* readMatrixFromFile(configuration config){
     return mat;
 }
 
+/**
+ * Função timestamp:
+ *  Objetivo: retorna um timestamp do momento 
+ *  Saida: O timestamp 
+ */
 double timestamp(void)
 {
     struct timeval tp;
@@ -76,6 +111,11 @@ double timestamp(void)
     return ((double)(tp.tv_sec * 1000.0 + tp.tv_usec / 1000.0));
 }
 
+
+/**
+ * Função printMatrix:
+ *  Objetivo: Imprimir no stdout uma matriz 
+ */
 void printMatrix(double *matrix, unsigned int n)
 {
     int i, j;
@@ -88,12 +128,38 @@ void printMatrix(double *matrix, unsigned int n)
     }
 }
 
+/**
+ * Função printMatrix:
+ *  Objetivo: Imprimir uma matriz de ordem n para o arquivo 
+ */
+void printMatrixToFile(double* matrix, unsigned int n, FILE* file)
+{
+    int i, j;
+
+    fprintf(file, "%d\n", N);
+    for (i = 0; i < N; i++){
+        for (j = 0; j < N; j++){
+            fprintf(file, "%.17g ", getVal(matrix, i, j));
+        }
+        fprintf(file, "\n");
+    }
+}
+
+/**
+ * Função printErrorExit:
+ *  Objetivo: imprimir no stderr uma mensagem e encerra o programa com codigo 1
+ */
 void printErrorExit(char *msg)
 {
     fprintf(stderr, "%s", msg);
     exit(1);
 }
 
+/**
+ * Função readConfiguration:
+ *  Objetivo: alocar a estrutura de dados configuration com base nos parametros recebidos por linha de comando
+ * verificando tambem as regras para os mesmos
+ */
 configuration readConfiguration(int argc, char *argv[])
 {
     int i;
@@ -165,4 +231,12 @@ configuration readConfiguration(int argc, char *argv[])
     }
 
     return config;
+}
+
+/**
+ * Função diffInSeconds:
+ *  Objetivo: Calcula a diferenca entre o momento e o timestamp recebido por pametro em segundos
+ */
+double diffInSeconds(double start){
+    return (timestamp() - start)/1000;
 }

@@ -1,0 +1,27 @@
+\hypertarget{structpivotsRecord}{}\section{Referência da Estrutura pivots\+Record}
+\label{structpivotsRecord}\index{pivots\+Record@{pivots\+Record}}
+
+
+Diagrama de colaboração para pivots\+Record\+:
+% FIG 0
+\subsection*{Campos de Dados}
+\begin{DoxyCompactItemize}
+\item 
+\mbox{\Hypertarget{structpivotsRecord_a766e302ee5d4db3106bdf0e513cee9bb}\label{structpivotsRecord_a766e302ee5d4db3106bdf0e513cee9bb}} 
+\hyperlink{structpivot}{pivot} $\ast$$\ast$ {\bfseries pivots}
+\item 
+\mbox{\Hypertarget{structpivotsRecord_ae9d1242707a67274145a91d94c91d3e9}\label{structpivotsRecord_ae9d1242707a67274145a91d94c91d3e9}} 
+int {\bfseries count}
+\end{DoxyCompactItemize}
+
+
+\subsection{Descrição Detalhada}
+
+
+Definição na linha 13 do arquivo matrix.\+h.
+
+
+
+A documentação para esta estrutura foi gerada a partir do seguinte arquivo\+:\begin{DoxyCompactItemize}
+\item 
+src/matrix.\+h\end{DoxyCompactItemize}

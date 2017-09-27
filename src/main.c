@@ -1,6 +1,14 @@
 #include "util.h"
 #include "matrix.h"
 
+/**
+ * Autores
+ * 
+ * @autor Fernando Medeiros Dufour GRR20140513
+ *   
+ * @autor Carolina Aparecida de Lara Moraes GRR20111353           
+ */
+
 
 int main(int argc, char* argv[]){        
     configuration config;  
@@ -14,7 +22,10 @@ int main(int argc, char* argv[]){
     double* idMatrixPivoted;    
     double* idMatrix;    
     double residue;
-    double time;
+    double startTime, startTime2;
+    double luDecompTime = 0.0;    
+    double totalResidueTime = 0.0;
+    double totalLsSolveTime = 0.0;
     pivotsRecord* pRecord;    
     srand(20172);
     LU* lu;    
@@ -32,7 +43,11 @@ int main(int argc, char* argv[]){
     pRecord->pivots = malloc(sizeof(pivot)* N); 
     pRecord->count = 0;
 
+    startTime = timestamp();
+
     lu = luDecomposition(matrix, pRecord, N);
+
+    luDecompTime = diffInSeconds(startTime);
 
     pivotMatrix(matrix, pRecord);
                 
@@ -44,21 +59,21 @@ int main(int argc, char* argv[]){
     
     idMatrix = getIdentityMatrix(N);            
 
-    // printMatrix(lu->L, N);
-    // printf("\n");
-    // printMatrix(lu->U, N);
-    // printf("#\n");
-    //double startTime = timestamp();
-    //Mprintf("%.17f\n", teste);    
-//    printMatrix(invMatrix, N);
+    if(config.outputFile == NULL)
+        printf("#\n");
+    else
+        fprintf(config.outputFile, "#\n");    
 
-    for(i = 0; i < config.iterationCount; i++){
-        //pivotMatrix(invMatrix, pRecord);
+    for(i = 0; i < config.iterationCount; i++){           
+        startTime = timestamp();
 
         B = multiplyMatrix(matrix, invMatrix, N);
 
+        startTime2 = timestamp();
+
         R = getResidue(B, idMatrix, &residue, N);                        
 
+        totalResidueTime += diffInSeconds(startTime2);
         
         Y = forwardSubstitution(lu->L, R, N, N);
 
@@ -66,15 +81,31 @@ int main(int argc, char* argv[]){
 
         AddMatrix(invMatrix, Delta, N);
 
-        printf("# iter %d: %.17f\n", (i+1), residue);
+        totalLsSolveTime += diffInSeconds(startTime);
 
-    }    
+        if(config.outputFile == NULL)
+            printf("# iter %d: %.17f\n", (i+1), residue);
+        else
+            fprintf(config.outputFile, "# iter %d: %.17f\n", (i+1), residue);
+
+    }        
         
-    // printMatrix(B, N);
-    // printf("%d\n", N);    
-    //printMatrix(invMatrix, N);    
+    pivotMatrix(invMatrix, pRecord);    
 
-    //printf("%.17f", fabs(teste - timestamp()/1000));
+    if(config.outputFile == NULL){
+        printf("# Tempo LU: %.17f\n", luDecompTime);
+        printf("# Tempo iter: %.17f\n", totalLsSolveTime/config.iterationCount);
+        printf("# Tempo residuo: %.17f\n", totalResidueTime/config.iterationCount);
+        printf("#\n");
+        printMatrix(invMatrix, N);        
+    }
+    else{
+        fprintf(config.outputFile, "# Tempo LU: %.17f\n", luDecompTime);
+        fprintf(config.outputFile, "# Tempo iter: %.17f\n", totalLsSolveTime/config.iterationCount);
+        fprintf(config.outputFile, "# Tempo residuo: %.17f\n", totalResidueTime/config.iterationCount);
+        fprintf(config.outputFile, "#\n");
+        printMatrixToFile(invMatrix, N, config.outputFile);
+    }
 
     return 0;
 }

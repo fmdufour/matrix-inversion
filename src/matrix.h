@@ -15,7 +15,8 @@ typedef struct pivotsRecord{
     int count;
 } pivotsRecord;
 
-
+void AddMatrix(double *A, double *B, unsigned int n);
+void pivotMatrix(double* m, pivotsRecord* pRecord);
 double* getResidue(double* B, double* idMatrix, double *residue, unsigned int n);
 void swapRows(double* A, int fromI, int toI, int startColumn, int n);
 double* multiplyMatrix(double* A, double* B, unsigned int n);
