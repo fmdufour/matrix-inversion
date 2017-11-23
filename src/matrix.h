@@ -31,9 +31,9 @@ typedef struct pivotsRecord{
 void AddMatrix(double *A, double *B, unsigned int n);
 void pivotMatrix(double* m, pivotsRecord* pRecord);
 double* getResidue(double* B, double* idMatrix, double *residue, unsigned int n);
-void swapRows(double* A, int fromI, int toI, int startColumn, int n);
+void swapRows(double* A, int fromI, int toI, int startColumn, int n, int aaa);
 double* multiplyMatrix(double* A, double* B, unsigned int n);
 void copyMatrix(double *A, double *B, unsigned int n);
-void pivotRows(double* matrix, int j, unsigned int n, pivotsRecord* pivots);
+void pivotRows(double* matrix, double* e, int j, unsigned int n, pivotsRecord* pivots);
 LU* luDecomposition(double* A, pivotsRecord* pRecord, unsigned int n);
 double getDeterminant(double* m, unsigned int n);

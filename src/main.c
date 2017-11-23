@@ -16,8 +16,7 @@ int main(int argc, char* argv[]){
     double* Y;
     double* B;
     double* R;
-    double* Delta;
-    double* idMatrixPivoted;    
+    double* Delta;    
     double* idMatrix;    
     double residue;
     double startTime, startTime2;
@@ -47,21 +46,20 @@ int main(int argc, char* argv[]){
     startTime = timestamp();
 
     //fatora a matriz em L e U
-    lu = luDecomposition(matrix, pRecord, N);
+    lu = luDecomposition(matrix, pRecord, N);    
 
     luDecompTime = diffInSeconds(startTime);
 
     //pivotei a matriz original para que a multiplicacao pela inversa gere a identidade corretamente
-    pivotMatrix(matrix, pRecord);
+    pivotMatrix(matrix, pRecord);    
                 
-    idMatrixPivoted = getIdentityMatrix(N);
+    //gera uma matriz identidade    
+    idMatrix = getIdentityMatrix(N);    
 
     //soluciona a equacao da forma Ly=B
-    Y = forwardSubstitution(lu->L, idMatrixPivoted, N, N);        
+    Y = forwardSubstitution(lu->L, idMatrix, N, N);        
     //soluciona a equacao da forma Ux=Y
     invMatrix = backwardSubstitution(lu->U, Y, N, N);       
-    //gera uma matriz identidade
-    idMatrix = getIdentityMatrix(N);            
 
     if(config.outputFile == NULL)
         printf("#\n");
@@ -88,25 +86,29 @@ int main(int argc, char* argv[]){
         totalLsSolveTime += diffInSeconds(startTime);
 
         if(config.outputFile == NULL)
-            printf("# iter %d: %.17f\n", (i+1), residue);
+            printf("# iter %d: %.17g\n", (i+1), residue);
         else
-            fprintf(config.outputFile, "# iter %d: %.17f\n", (i+1), residue);
+            fprintf(config.outputFile, "# iter %d: %.17g\n", (i+1), residue);
 
+        free(B);
+        free(Delta);
+        free(Y);
+        free(R);
     }        
     //pivoteia a matriz inversa para sair corretamente
     pivotMatrix(invMatrix, pRecord);    
 
     if(config.outputFile == NULL){
-        printf("# Tempo LU: %.17f\n", luDecompTime);
-        printf("# Tempo iter: %.17f\n", totalLsSolveTime/config.iterationCount);
-        printf("# Tempo residuo: %.17f\n", totalResidueTime/config.iterationCount);
+        printf("# Tempo LU: %.17g\n", luDecompTime);
+        printf("# Tempo iter: %.17g\n", totalLsSolveTime/config.iterationCount);
+        printf("# Tempo residuo: %.17g\n", totalResidueTime/config.iterationCount);
         printf("#\n");
         printMatrix(invMatrix, N);        
     }
     else{
-        fprintf(config.outputFile, "# Tempo LU: %.17f\n", luDecompTime);
-        fprintf(config.outputFile, "# Tempo iter: %.17f\n", totalLsSolveTime/config.iterationCount);
-        fprintf(config.outputFile, "# Tempo residuo: %.17f\n", totalResidueTime/config.iterationCount);
+        fprintf(config.outputFile, "# Tempo LU: %.17g\n", luDecompTime);
+        fprintf(config.outputFile, "# Tempo iter: %.17g\n", totalLsSolveTime/config.iterationCount);
+        fprintf(config.outputFile, "# Tempo residuo: %.17g\n", totalResidueTime/config.iterationCount);
         fprintf(config.outputFile, "#\n");
         printMatrixToFile(invMatrix, N, config.outputFile);
     }

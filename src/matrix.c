@@ -12,7 +12,7 @@ void pivotMatrix(double* m, pivotsRecord* pRecord){
     int i;
 
     for(i = 0; i < pRecord->count; i++){
-        swapRows(m, pRecord->pivots[i]->fromIndex, pRecord->pivots[i]->toIndex, 0, N);
+        swapRows(m, pRecord->pivots[i]->fromIndex, pRecord->pivots[i]->toIndex, 0, N, 0);
     }
         
 }
@@ -26,11 +26,15 @@ void pivotMatrix(double* m, pivotsRecord* pRecord){
  *           - startColumn -> A coluna inicial para a troca
  *           - n -> A ordem da matriz de entrada
  */
-void swapRows(double* A, int fromI, int toI, int startColumn, int n){
+void swapRows(double* A, int fromI, int toI, int startColumn, int n, int isFromStart){
     int i;
     double temp;
+    if(isFromStart)
+        startColumn = 0;
     for (i = startColumn; i < n; i++)
     {        
+        if(isFromStart == 1 && (1.0 == getVal(A, fromI, i) || 1.0 == getVal(A, toI, i)))
+            continue;
         temp = getVal(A, fromI, i);
         getVal(A, fromI, i) = getVal(A, toI, i);
         getVal(A, toI, i) = temp;
@@ -45,7 +49,7 @@ void swapRows(double* A, int fromI, int toI, int startColumn, int n){
  *           - n -> A ordem da matriz de entrada
  *           - pRecord -> A estrutura de dados na qual o historico de pivots sera salvado 
  */
-void pivotRows(double *matrix, int j, unsigned int n, pivotsRecord* pRecord)
+void pivotRows(double *matrix, double *aux, int j, unsigned int n, pivotsRecord* pRecord)
 {
     int i = j;
     double max = fabs(getVal(matrix, i, j));
@@ -69,7 +73,8 @@ void pivotRows(double *matrix, int j, unsigned int n, pivotsRecord* pRecord)
         pRecord->pivots[pRecord->count] = p;       
         pRecord->count++;
 
-        swapRows(matrix, j, maxIndex, j, n);        
+        swapRows(matrix, j, maxIndex, j, n, 0);        
+        swapRows(aux, j, maxIndex, j, n, 1);        
     }
 }
 
@@ -113,7 +118,8 @@ LU *luDecomposition(double *A, pivotsRecord* pRecord, unsigned int n)
 
     for (j = 0; j < N; j++)
     {
-        pivotRows(lu->U, j, N, pRecord);  
+        pivotRows(lu->U, lu->L, j, N, pRecord);
+
         for (i = j + 1; i < N; i++)
         {
             if(getVal(lu->U, j, j) == 0)
